@@ -20,7 +20,6 @@ kill_old_process() {
 }
 
 start_new_process() {
-    source $VENV_PATH 
     nohup $CMD >> $LOG_FILE 2>&1 &
     echo $! > $PID_FILE
     echo "[$(date)] 启动新进程 PID: $(cat $PID_FILE)" | tee -a $LOG_FILE
