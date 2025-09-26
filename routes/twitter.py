@@ -16,7 +16,7 @@ async def tweet_details(requet: Request) -> Response:
     return Response(content=result.json(), headers={"Content-Type": "application/json"})
 
 @handle_request
-async def get_user_info(requet: Request) -> Response:
+async def user_by_login(requet: Request) -> Response:
     username = requet.path_params.get("username")
     if not username:
         return JSONResponse({"message": "请提供用户名"})
@@ -24,6 +24,27 @@ async def get_user_info(requet: Request) -> Response:
     if not result:
         return JSONResponse({"message": "获取用户信息失败"})
     return Response(content=result.json(), headers={"Content-Type": "application/json"})
+
+@handle_request
+async def user_following(requet: Request) -> Response:
+    user_id = requet.path_params.get("user_id")
+    if not user_id:
+        return JSONResponse({"message": "请提供用户id"})
+    page_size = get_page_size(requet.query_params.get("sz"))
+    result = await TweetScraper().user_following(int(user_id), page_size)
+    return JSONResponse(content=[json.loads(i.json()) for i in result])
+
+@handle_request
+async def user_followers(requet: Request) -> Response:
+    user_id = requet.path_params.get("user_id")
+    if not user_id:
+        return JSONResponse({"message": "请提供用户id"})
+    page_size = get_page_size(requet.query_params.get("sz"))
+    result = await TweetScraper().user_followers(int(user_id), page_size)
+    return JSONResponse(content=[json.loads(i.json()) for i in result])
+
+def get_page_size(page_size) -> int:
+    return int(page_size) if page_size else 100
 
 @handle_request
 async def get_user_tweets(requet: Request) -> Response:

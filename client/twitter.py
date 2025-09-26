@@ -37,6 +37,22 @@ class TweetScraper:
         except Exception as e:
             self.logger.error(f"获取用户 ID {user_id} 推文时出错: {e}")
         return []
+    
+    @ensure_accounts
+    async def user_following(self, user_id: int, limit: int = 100) -> list[User]:
+        try:
+            return await gather(self.api.following(user_id, limit))
+        except Exception as e:
+            self.logger.error(f"获取用户 ID {user_id} 关注列表时出错: {e}")
+        return []
+
+    @ensure_accounts
+    async def user_followers(self, user_id: int, limit: int = 100) -> list[User]:
+        try:
+            return await gather(self.api.followers(user_id, limit))
+        except Exception as e:
+            self.logger.error(f"获取用户 ID {user_id} 粉丝列表时出错: {e}")
+        return []
 
     @ensure_accounts
     async def search(self, q: str, kv: dict = {"product": "Top"}, limit: int = 100):
